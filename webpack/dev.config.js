@@ -1,17 +1,22 @@
 const path = require('path');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 const WebpackBar = require('webpackbar');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
+const baseConfig = require('./base.config');
 
 const publicPath = '/';
 
-module.exports = {
-  stats: 'errors-only',
+const config = {
   mode: 'development',
   target: 'web',
-  entry: ['webpack-hot-middleware/client', './client'],
+  entry: [
+    'webpack-hot-middleware/client',
+    path.resolve(__dirname, './polyfill'),
+    path.resolve(__dirname, '../client'),
+  ],
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, '../build'),
     filename: '[name].js',
     publicPath,
   },
@@ -30,6 +35,11 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
+              env: {
+                development: {
+                  plugins: ['react-hot-loader/babel'],
+                },
+              },
             },
           },
         ],
@@ -37,13 +47,11 @@ module.exports = {
     ],
   },
   plugins: [
-    new WebpackBar(),
-    new WebpackAssetsManifest(),
+    new WebpackBar({ name: 'Dev Server' }),
+    new WebpackAssetsManifest({ publicPath }),
     new webpack.HotModuleReplacementPlugin(),
   ],
   optimization: {
-    noEmitOnErrors: true,
-    moduleIds: 'hashed',
     runtimeChunk: {
       name: 'manifest',
     },
@@ -58,3 +66,5 @@ module.exports = {
     },
   },
 };
+
+module.exports = merge(baseConfig, config);

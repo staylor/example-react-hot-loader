@@ -16,18 +16,20 @@ let assets = {
 };
 
 if (process.env.NODE_ENV === 'development') {
-  const config = require('../webpack.config');
+  const config = require('../webpack/dev.config');
   const compiler = webpack(config);
   const devMiddleware = require('webpack-dev-middleware');
   const hotMiddleware = require('webpack-hot-middleware');
   app.use(devMiddleware(compiler, config.devServer));
   app.use(hotMiddleware(compiler));
-} else {
-  const assetJSON = fs.readFileSync(path.join(process.cwd(), 'dist', 'manifest.json'));
-  assets = JSON.parse(assetJSON);
-}
 
-app.use(express.static('dist'));
+  app.use(express.static('build'));
+} else {
+  const assetJSON = fs.readFileSync(path.join(process.cwd(), 'build', 'manifest.json'));
+  assets = JSON.parse(assetJSON);
+
+  app.use('/static', express.static('build'));
+}
 
 app.get('/', (req, res) => {
   const html = renderToString(<App />);

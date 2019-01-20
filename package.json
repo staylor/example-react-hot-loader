@@ -4,8 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
-    "start": "rimraf dist && NODE_ENV=development babel-node ./server/index.js"
+    "clean": "rimraf build",
+    "build": "webpack --config ./webpack/prod.client && webpack --config ./webpack/prod.server",
+    "dev": "yarn clean && NODE_ENV=development babel-node ./server/index.js",
+    "prod": "yarn clean && yarn build && node ./build/server/main.js",
+    "start": "NODE_ENV=production yarn prod"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -15,14 +18,14 @@
     "@babel/preset-react": "^7.0.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.0.5",
-    "html-webpack-plugin": "^3.2.0",
     "rimraf": "^2.6.3",
     "webpack": "^4.28.4",
     "webpack-assets-manifest": "^3.1.1",
     "webpack-cli": "^3.2.1",
     "webpack-dev-middleware": "^3.5.1",
-    "webpack-dev-server": "^3.1.14",
     "webpack-hot-middleware": "^2.24.3",
+    "webpack-merge": "^4.2.1",
+    "webpack-node-externals": "^1.7.2",
     "webpackbar": "^3.1.5"
   },
   "dependencies": {
